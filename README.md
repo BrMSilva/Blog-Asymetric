@@ -32,42 +32,41 @@ docker-compose.yml
 │Docker │           │Docker  │
 │Container          │Container│
 └───────┘           └────────┘
+Backend exposes API on PORT=4000
 
+Frontend serves the React app on port 80
 
-## Requirements
+SQLite database persisted in /home/ec2-user/data
 
-- Node.js >= 18
-- Docker
-- Docker Compose
-- AWS CLI configured
-- Git
+Local Development
 
-## Local Setup
+Clone the repository:
 
-1. Clone the repository:
-
-```bash
-git clone <https://github.com/BrMSilva/Blog-Asymetric>
+git clone <repo-url>
 cd Blog-Asymetric
 
-Create a .env file in the root directory:
+
+Create a .env file in the root:
 
 ADMIN_TOKEN=<your_admin_token>
 DB_PATH=/app/data/blog.sqlite
 PORT=4000
 
-Start the containers locally:
+
+Start containers locally:
 
 docker-compose up --build
-The frontend will be available at http://localhost
- and the backend at http://localhost:4000
-.
 
-Deployment
 
-Deployment is done via the deploy.sh script:
+Frontend: http://localhost
 
-Set the environment variables:
+Backend API: http://localhost:4000
+
+Deployment (AWS EC2)
+
+SSH into your EC2 instance.
+
+Set environment variables:
 
 export ADMIN_TOKEN=<your_admin_token>
 
@@ -82,12 +81,27 @@ The script will:
 
 Log in to AWS ECR
 
-Pull the latest Docker images
+Pull the latest backend and frontend images
 
-Stop old containers
+Stop old containers if they exist
 
-Start the backend and frontend in new containers
+Start new containers with --restart unless-stopped
 
+API Endpoints
+Method	Endpoint	Description
+GET	/api/articles	List all articles
+GET	/api/articles/:slug	Get a single article by slug
+POST	/api/articles	Create a new article
+PUT	/api/articles/:slug	Update an article
+DELETE	/api/articles/:slug	Delete an article
+
+Authentication: use ADMIN_TOKEN for write operations.
+
+Environment Variables
+Variable	Description
+ADMIN_TOKEN	Secret token for admin operations
+DB_PATH	Path for SQLite database
+PORT	Backend port (default: 4000)
 Technologies
 
 React
@@ -100,14 +114,6 @@ Docker / Docker Compose
 
 AWS EC2 / ECR
 
-License
-
-MIT
 
 
-If you want, I can also make **an enhanced version** with:
-
-- Architecture diagram  
-- API endpoints list  
-- Environment-specific instructions (development vs production)  
 
