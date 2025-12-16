@@ -1,0 +1,27 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region eu-north-1 |
+        docker login --username AWS --password-stdin 592573568501.dkr.ecr.eu-north-1.amazonaws.com
+
+  build:
+    commands:
+      - echo Building backend...
+      - docker build -t db.blog/bs . 
+      - echo Building frontend...
+      - docker build -t df.blog.bs .
+
+  post_build:
+    commands:
+      - echo Tagging images...
+      - docker tag db.blog/bs:latest 592573568501.dkr.ecr.eu-north-1.amazonaws.com/db.blog/bs:latest
+      - docker tag df.blog.bs:latest 592573568501.dkr.ecr.eu-north-1.amazonaws.com/df.blog.bs:latest
+      - echo Pushing to ECR...
+      - docker push 592573568501.dkr.ecr.eu-north-1.amazonaws.com/db.blog/bs:latest
+      - docker push 592573568501.dkr.ecr.eu-north-1.amazonaws.com/df.blog.bs:latest
+
+artifacts:
+  files: []

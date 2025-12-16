@@ -1,0 +1,31 @@
+services:
+  backend:
+    build: ./backend
+    container_name: blog-backend
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - ADMIN_TOKEN=32015ad428cc76b71cfe1ceefdc71f496fe6c10319e8c20411c64bcefa2bfca7
+      - DB_PATH=/data/blog.sqlite
+    volumes:
+      - backend_data:/data
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: blog-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      
+      - VITE_API_URL=http://localhost:4000/posts
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  backend_data:
+
+
+
