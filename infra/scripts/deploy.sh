@@ -1,16 +1,19 @@
 #!/bin/bash
-set -e
+set -eu
 
-AWS_REGION=eu-north-1
-AWS_ACCOUNT_ID=592573568501
+# --- Config ---
+AWS_REGION="eu-north-1"
+AWS_ACCOUNT_ID="592573568501"
 
 ECR_BASE="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
 
 BACKEND_IMAGE="$ECR_BASE/blog-backend:latest"
 FRONTEND_IMAGE="$ECR_BASE/blog-frontend:latest"
 
-# validctions
-if [ -z "$ADMIN_TOKEN" ]; then
+DATA_DIR="/home/ec2-user/data"
+
+# --- Validações ---
+if [ -z "${ADMIN_TOKEN:-}" ]; then
   echo "❌ ADMIN_TOKEN não definido"
   exit 1
 fi
@@ -20,18 +23,25 @@ docker info >/dev/null 2>&1 || {
   exit 1
 }
 
-echo "🔐 Login no ECR ($AWS_REGION)..."
-aws ecr get-login-password --region $AWS_REGION \
-  | docker login --username AWS --password-stdin $ECR_BASE
+# --- Login ECR ---
+echo "🔐 Login no ECR..."
+aws ecr get-login-password --region "$AWS_REGION" \
+  | docker login --username AWS --password-stdin "$ECR_BASE"
 
+# --- Pull das imagens ---
 echo "📥 Pull das imagens..."
-docker pull $BACKEND_IMAGE
-docker pull $FRONTEND_IMAGE
+docker pull "$BACKEND_IMAGE"
+docker pull "$FRONTEND_IMAGE"
 
+# --- Preparação ---
+mkdir -p "$DATA_DIR"
+
+# --- Stop containers antigos ---
 echo "🛑 Parando containers antigos..."
 docker stop blog-backend blog-frontend 2>/dev/null || true
 docker rm blog-backend blog-frontend 2>/dev/null || true
 
+# --- Backend ---
 echo "🚀 Subindo backend..."
 docker run -d \
   --name blog-backend \
@@ -40,16 +50,18 @@ docker run -d \
   -e PORT=4000 \
   -e DB_PATH=/app/data/blog.sqlite \
   -e ADMIN_TOKEN="$ADMIN_TOKEN" \
-  -v /home/ec2-user/data:/app/data \
-  $BACKEND_IMAGE
+  -v "$DATA_DIR:/app/data" \
+  "$BACKEND_IMAGE"
 
+# --- Frontend ---
 echo "🚀 Subindo frontend..."
 docker run -d \
   --name blog-frontend \
   -p 80:80 \
   --restart unless-stopped \
-  $FRONTEND_IMAGE
+  "$FRONTEND_IMAGE"
 
-echo "✅ Deploy finalizado com sucesso!"
+echo "✅ Deploy finalizado"
+
 
 
