@@ -5,10 +5,12 @@ set -eu
 AWS_REGION="eu-north-1"
 AWS_ACCOUNT_ID="592573568501"
 
-ECR_BASE="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
+# Repositórios separados
+BACKEND_REPO="db.blog/backend"
+FRONTEND_REPO="db.blog/frontend"
 
-BACKEND_IMAGE="$ECR_BASE/blog-backend:latest"
-FRONTEND_IMAGE="$ECR_BASE/blog-frontend:latest"
+BACKEND_IMAGE="592573568501.dkr.ecr.eu-north-1.amazonaws.com/db.blog/backend:latest"
+FRONTEND_IMAGE="592573568501.dkr.ecr.eu-north-1.amazonaws.com/db.blog/frontend:latest"
 
 DATA_DIR="/home/ec2-user/data"
 
@@ -26,7 +28,7 @@ docker info >/dev/null 2>&1 || {
 # --- Login ECR ---
 echo "🔐 Login no ECR..."
 aws ecr get-login-password --region "$AWS_REGION" \
-  | docker login --username AWS --password-stdin "$ECR_BASE"
+  | docker login --username AWS --password-stdin "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
 
 # --- Pull das imagens ---
 echo "📥 Pull das imagens..."
@@ -62,6 +64,7 @@ docker run -d \
   "$FRONTEND_IMAGE"
 
 echo "✅ Deploy finalizado"
+
 
 
 
