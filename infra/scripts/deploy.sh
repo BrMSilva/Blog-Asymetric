@@ -59,7 +59,7 @@ docker run -d \
 echo "🚀 Subindo frontend..."
 docker run -d \
   --name blog-frontend \
-  -p 80:80 \
+  -p 3000:80 \
   --restart unless-stopped \
   "$FRONTEND_IMAGE"
 
