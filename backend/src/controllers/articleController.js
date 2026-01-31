@@ -1,4 +1,6 @@
 import { listArticles, findArticleById } from "../models/db.js";
+
+
 // Controller to manage articles
 export async function getAllArticles(req, res) {
   const articles = await listArticles();
