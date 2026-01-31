@@ -1,16 +1,16 @@
 import axios from "axios";
 
-// A URL base SEM "/posts"
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL ?? "/api",
+});
 
-// Endpoints
-export async function fetchArticles() {
-  const res = await axios.get(`${BASE_URL}/posts`);
-  return res.data;
-}
-// Fetch a single article by slug
-export async function fetchArticle(slug) {
-  const res = await axios.get(`${BASE_URL}/posts/${slug}`);
-  return res.data;
-}
+export const fetchArticles = async () => {
+  const { data } = await api.get("/posts");
+  return data;
+};
+
+export const fetchArticle = async (slug) => {
+  const { data } = await api.get(`/posts/${slug}`);
+  return data;
+};
 

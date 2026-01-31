@@ -12,7 +12,7 @@ const app = express();
 
 // CORS enabled for developers only — you can adjust it later.
 app.use(cors({
-  origin: ['http://localhost:5173'],  // frontend Vite
+  origin: ['https://blog-bmarques.duckdns.org'],  // frontend Vite
   methods: ['GET', 'POST'],
 }));
 app.use(bodyParser.json());
