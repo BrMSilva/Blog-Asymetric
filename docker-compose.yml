@@ -13,13 +13,13 @@ services:
     restart: unless-stopped
 
   frontend:
-    build: ./frontend
+    build: ./frontend 
     container_name: blog-frontend
     ports:
       - "3000:3000"
     environment:
       
-      - VITE_API_URL=http://localhost:4000/posts
+      - VITE_API_URL=http://13.60.75.36:4000/posts
     depends_on:
       - backend
     restart: unless-stopped

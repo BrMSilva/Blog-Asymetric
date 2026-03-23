@@ -43,8 +43,7 @@ echo "🛑 Parando containers antigos..."
 docker stop blog-backend blog-frontend 2>/dev/null || true
 docker rm blog-backend blog-frontend 2>/dev/null || true
 
-# --- Backend ---
-echo "🚀 Subindo backend..."
+# Backend
 docker run -d \
   --name blog-backend \
   -p 4000:4000 \
@@ -52,16 +51,15 @@ docker run -d \
   -e PORT=4000 \
   -e DB_PATH=/app/data/blog.sqlite \
   -e ADMIN_TOKEN="$ADMIN_TOKEN" \
-  -v "$DATA_DIR:/app/data" \
-  "$BACKEND_IMAGE"
+  -v "/home/ec2-user/data:/app/data" \
+  592573568501.dkr.ecr.eu-north-1.amazonaws.com/db.blog/backend:latest
 
-# --- Frontend ---
-echo "🚀 Subindo frontend..."
+# Frontend
 docker run -d \
   --name blog-frontend \
   -p 3000:80 \
   --restart unless-stopped \
-  "$FRONTEND_IMAGE"
+  592573568501.dkr.ecr.eu-north-1.amazonaws.com/db.blog/frontend:latest
 
 echo "✅ Deploy finalizado"
 

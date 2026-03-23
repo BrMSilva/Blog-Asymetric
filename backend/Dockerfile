@@ -2,13 +2,18 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# Instala dependências
 COPY package*.json ./
-RUN npm install --only=production
+RUN npm ci --omit=dev
 
+# Copia código
 COPY src ./src
-COPY .env .env
 
-RUN mkdir -p /app/data
+# Cria diretório de dados (se realmente precisar)
+RUN mkdir -p /data
+
+# Segurança: roda como usuário não-root
+USER node
 
 EXPOSE 4000
 
