@@ -18,11 +18,26 @@ services:
     container_name: blog-frontend
     ports:
       - "80:80"
+      - "443:443" # Essencial para o HTTPS
     environment:
-      - VITE_API_URL=http://13.60.75.36:4000/posts
+      # Agora a API passa pelo domínio seguro
+      - VITE_API_URL=https://blog-bmarques.duckdns.org/posts
+    volumes:
+      # Mapeamento para o Nginx ler os certificados gerados
+      - ./certbot/conf:/etc/letsencrypt:ro
+      - ./certbot/www:/var/www/certbot:ro
     depends_on:
       - backend
     restart: unless-stopped
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    # Comando para verificar renovação a cada 12 horas
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
 volumes:
   backend_data:
