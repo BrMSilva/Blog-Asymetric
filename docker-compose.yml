@@ -8,7 +8,7 @@ services:
       - PORT=4000
       - ADMIN_TOKEN=32015ad428cc76b71cfe1ceefdc71f496fe6c10319e8c20411c64bcefa2bfca7
       - DB_PATH=/data/blog.sqlite
-      - .env
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
     volumes:
       - backend_data:/data
     restart: unless-stopped
